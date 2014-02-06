@@ -42,51 +42,7 @@ class HtmlUtil
 
 end
 
-class Page
 
-  attr_reader :attributes, :wiki_page
-  attr_accessor :content
 
-  def initialize (content, attributes = {})
-    @attributes = attributes
-    @content = content
-  end
-
-  def has_attribute (attribute_name)
-    attributes.has_key?(attribute_name)
-  end
-
-  def html
-    "<html></html>"
-  end
-
-  def page_crawler
-    PageCrawlerImpl.new
-  end
-end
-
-class PageCrawlerImpl
-  def self.inherited_page (page_type, page)
-    return Page.new("") if page_type == SuiteResponder::SUITE_SETUP_NAME
-    return Page.new("") if page_type == SuiteResponder::SUITE_TEARDOWN_NAME
-  end
-
-  def full_path (page)
-    ""
-  end
-end
-
-class PathParser
-
-  def self.render (page_path)
-    ""
-  end
-
-end
-
-class SuiteResponder
-  SUITE_SETUP_NAME = "SUITE_SETUP_NAME"
-  SUITE_TEARDOWN_NAME = "SUITE_TEARDOWN_NAME"
-end
 
 HtmlUtil.testable_html(Page.new("", {'Test' => ''}), true)
