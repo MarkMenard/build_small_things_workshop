@@ -23,21 +23,27 @@ class PageBuilder
   private
 
   def build_setup
-    if page_data.has_attribute('Test')
-      if include_suite_setup
-        suite_setup = PageCrawlerImpl.inherited_page(SuiteResponder::SUITE_SETUP_NAME, wiki_page)
-        if suite_setup
-          page_path = suite_setup.page_crawler.full_path(suite_setup)
-          page_path_name = PathParser.render(page_path)
-          buffer.concat('!include -setup .').concat(page_path_name).concat("\n")
-        end
-      end
-      setup = PageCrawlerImpl.inherited_page('SetUp', wiki_page)
-      if !setup.nil?
-        setup_path = wiki_page.page_crawler.full_path(setup)
-        setup_path_name = PathParser.render(setup_path)
-        buffer.concat('!include -setup .').concat(setup_path_name).concat("\n")
-      end
+    return unless page_data.has_attribute('Test')
+    build_suite_setup
+    build_page_setup
+  end
+
+  def build_suite_setup
+    return unless include_suite_setup
+    suite_setup = PageCrawlerImpl.inherited_page(SuiteResponder::SUITE_SETUP_NAME, wiki_page)
+    if suite_setup
+      page_path = suite_setup.page_crawler.full_path(suite_setup)
+      page_path_name = PathParser.render(page_path)
+      buffer.concat('!include -setup .').concat(page_path_name).concat("\n")
+    end
+  end
+
+  def build_page_setup
+    setup = PageCrawlerImpl.inherited_page('SetUp', wiki_page)
+    if !setup.nil?
+      setup_path = wiki_page.page_crawler.full_path(setup)
+      setup_path_name = PathParser.render(setup_path)
+      buffer.concat('!include -setup .').concat(setup_path_name).concat("\n")
     end
   end
 
@@ -46,21 +52,27 @@ class PageBuilder
   end
 
   def build_teardown
-    if page_data.has_attribute('Test')
-      teardown = PageCrawlerImpl.inherited_page('TearDown', wiki_page)
-      if !teardown.nil?
-        tear_down_path = wiki_page.page_crawler.full_path(teardown)
-        tear_down_path_name = PathParser.render(tear_down_path)
-        buffer.concat("\n").concat('!include -teardown .').concat(tear_down_path_name).concat("\n")
-      end
-      if include_suite_setup
-        suite_teardown = PageCrawlerImpl.inherited_page(SuiteResponder::SUITE_TEARDOWN_NAME, wiki_page)
-        if !suite_teardown.nil?
-          page_path = suite_teardown.page_crawler.full_path(suite_teardown)
-          page_path_name = PathParser.render(page_path)
-          buffer.concat('!include -teardown .').concat(page_path_name).concat("\n")
-        end
-      end
+    return unless page_data.has_attribute('Test')
+    build_suite_teardown
+    build_page_teardown
+  end
+
+  def build_page_teardown
+    teardown = PageCrawlerImpl.inherited_page('TearDown', wiki_page)
+    if !teardown.nil?
+      tear_down_path = wiki_page.page_crawler.full_path(teardown)
+      tear_down_path_name = PathParser.render(tear_down_path)
+      buffer.concat("\n").concat('!include -teardown .').concat(tear_down_path_name).concat("\n")
+    end
+  end
+
+  def build_suite_teardown
+    return unless include_suite_setup
+    suite_teardown = PageCrawlerImpl.inherited_page(SuiteResponder::SUITE_TEARDOWN_NAME, wiki_page)
+    if !suite_teardown.nil?
+      page_path = suite_teardown.page_crawler.full_path(suite_teardown)
+      page_path_name = PathParser.render(page_path)
+      buffer.concat("\n").concat('!include -teardown .').concat(page_path_name).concat("\n")
     end
   end
 
