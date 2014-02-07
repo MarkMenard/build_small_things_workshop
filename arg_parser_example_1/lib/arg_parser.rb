@@ -23,16 +23,16 @@ class ArgParser
     end
 
     # Check that integer arguments have a value
-    @arg_definitions.select { |definition| definition[1] == '#' }.each do |string_arg|
-      arg_flag = string_arg[0]
+    @arg_definitions.select { |definition| definition[1] == '#' }.each do |int_arg|
+      arg_flag = int_arg[0]
       @args.select { |arg| arg[1] == arg_flag }.each do |arg|
         raise ArgParseError.new("Missing integer for -#{arg_flag}") if arg.length < 3
       end
     end
 
     # Check that integer arguments are an integer
-    @arg_definitions.select { |definition| definition[1] == '#' }.each do |string_arg|
-      arg_flag = string_arg[0]
+    @arg_definitions.select { |definition| definition[1] == '#' }.each do |int_arg|
+      arg_flag = int_arg[0]
       @args.select { |arg| arg[1] == arg_flag }.each do |arg|
         int_string = arg[2..-1]
         raise ArgParseError.new("Integer expected for -#{arg_flag}") unless (Integer(int_string) rescue false)
