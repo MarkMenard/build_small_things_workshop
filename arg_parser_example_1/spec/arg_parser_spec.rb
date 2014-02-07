@@ -60,4 +60,15 @@ describe ArgParser do
     end
   end
 
+  describe "float options"
+
+  describe "string array options" do
+    it "can parse string array options"
+  end
+
+  describe "definition options" do
+    it "can parse multiple definition options"
+    it "can lookup definition options"
+  end
+
 end
