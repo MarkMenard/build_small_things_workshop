@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ArgParser do
 
   describe "parsing errors" do
-    it "raises an error when a non-defined flag is present" do
+    it "raises an error when an invalid flag is present" do
       expect { ArgParser.new("c", [ "-v" ])}.to raise_error ArgParseError, "Unexpected option -v"
     end
 
@@ -16,7 +16,7 @@ describe ArgParser do
     end
 
     it "raises a parse error when an integer argument is not an integer" do
-      expect { ArgParser.new("e#", [ "-efoo" ])}.to raise_error ArgParseError, "Integer expected for -e"
+      expect { ArgParser.new("e#", [ "-efoo" ])}.to raise_error ArgParseError, "Integer expected for -e, but was 'foo'"
     end
   end
 

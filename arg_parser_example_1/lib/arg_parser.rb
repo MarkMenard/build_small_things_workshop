@@ -35,7 +35,7 @@ class ArgParser
       arg_flag = int_arg[0]
       @args.select { |arg| arg[1] == arg_flag }.each do |arg|
         int_string = arg[2..-1]
-        raise ArgParseError.new("Integer expected for -#{arg_flag}") unless (Integer(int_string) rescue false)
+        raise ArgParseError.new("Integer expected for -#{arg_flag}, but was '#{int_string}'") unless (Integer(int_string) rescue false)
       end
     end
 
