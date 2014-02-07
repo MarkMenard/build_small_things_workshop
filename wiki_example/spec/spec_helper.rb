@@ -9,7 +9,7 @@ require 'page'
 require 'page_crawler_impl'
 require 'path_parser'
 require 'suite_responder'
-require 'html_util'
+require 'page_builder'
 
 RSpec.configure do |config|
   config.color_enabled = true

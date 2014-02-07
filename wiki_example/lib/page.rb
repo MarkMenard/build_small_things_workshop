@@ -13,7 +13,11 @@ class Page
   end
 
   def html
-    "<html></html>"
+    "#{content}"
+  end
+
+  def wiki_page
+    @wiki_page ||= Page.new("")
   end
 
   def page_crawler
