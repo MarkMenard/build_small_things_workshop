@@ -8,20 +8,27 @@ class ArgParser
     @arg_definitions = @format_string.split(/,/)
     @expected_args = @arg_definitions.collect { |arg_def| arg_def[0] }
 
-    #Check to see if an arg is present that has no definition
+    check_for_invalid_options
+    validate_string_arguments
+    validate_integer_arguments
+  end
 
+  def check_for_invalid_options
     @args.collect { |arg| arg[1] }.each do |arg_character|
       raise ArgParseError.new("Unexpected option -#{arg_character}") if !@expected_args.include?(arg_character)
     end
+  end
 
-    # Check that string arguments have a value
+  def validate_string_arguments
     @arg_definitions.select { |definition| definition[1] == 's' }.each do |string_arg|
       arg_flag = string_arg[0]
       @args.select { |arg| arg[1] == arg_flag }.each do |arg|
         raise ArgParseError.new("Missing string for -#{arg_flag}") if arg.length < 3
       end
     end
+  end
 
+  def validate_integer_arguments
     # Check that integer arguments have a value
     @arg_definitions.select { |definition| definition[1] == '#' }.each do |int_arg|
       arg_flag = int_arg[0]
@@ -38,7 +45,6 @@ class ArgParser
         raise ArgParseError.new("Integer expected for -#{arg_flag}, but was '#{int_string}'") unless (Integer(int_string) rescue false)
       end
     end
-
 
   end
 
