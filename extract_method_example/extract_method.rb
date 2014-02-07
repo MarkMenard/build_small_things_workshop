@@ -1,8 +1,12 @@
+# BEFORE
+
 def print_invoice_for_amount (amount)
   print_header
   puts "Name: #{@name}"
   puts "Amount: #{amount}"
 end
+
+# AFTER
 
 def print_invoice_for_amount (amount)
   print_header
