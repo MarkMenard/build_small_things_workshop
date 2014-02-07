@@ -7,9 +7,9 @@ class PageCrawlerImpl
   end
 
   def full_path (page)
-    return "SUITE_SETUP" if page.attributes[:name] == SuiteResponder::SUITE_SETUP_NAME
-    return "SUITE_TEARDOWN" if page.attributes[:name] == SuiteResponder::SUITE_TEARDOWN_NAME
-    return "PAGE_SETUP" if page.attributes[:name] == "PAGE_SETUP"
-    return "PAGE_TEARDOWN" if page.attributes[:name] == "PAGE_TEARDOWN"
+    return "SUITE_SETUP_PATH" if page.attributes[:name] == SuiteResponder::SUITE_SETUP_NAME
+    return "SUITE_TEARDOWN_PATH" if page.attributes[:name] == SuiteResponder::SUITE_TEARDOWN_NAME
+    return "PAGE_SETUP_PATH" if page.attributes[:name] == "PAGE_SETUP"
+    return "PAGE_TEARDOWN_PATH" if page.attributes[:name] == "PAGE_TEARDOWN"
   end
 end

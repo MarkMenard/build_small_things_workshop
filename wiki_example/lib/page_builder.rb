@@ -1,6 +1,6 @@
 class PageBuilder
 
-  def self.testable_html (page_data, include_suite_setup)
+  def self.build_pseudo_markup (page_data, include_suite_setup)
     wiki_page = page_data.wiki_page
     buffer = ""
     if page_data.has_attribute('Test')
@@ -36,8 +36,7 @@ class PageBuilder
         end
       end
     end
-    page_data.content = buffer
-    return page_data.html
+    return buffer
   end
 
 end

@@ -2,31 +2,68 @@ require 'spec_helper'
 
 describe PageBuilder do
 
-  let(:page) { Page.new("PAGE_CONTENT", {'Test' => true}) }
+  let(:page) { Page.new("<p>PAGE_CONTENT</p>", {'Test' => true}) }
 
-  describe "building HTML page" do
+  describe "building pseudo markup" do
     describe "without the suite setup" do
+      # Example of output from building the psuedo markup:
+      #
+      # !include -setup .PAGE_SETUP_PATH
+      # PAGE_CONTENT
+      # !include -teardown .PAGE_TEARDOWN_PATH
+
+      let(:built_content) { PageBuilder.build_pseudo_markup(page, false) }
+
       it "includes the page content" do
-        expected_result = "<html>\n!include -setup .PAGE_SETUP\nPAGE_CONTENT\n!include -teardown .PAGE_TEARDOWN\n</html>"
-        expect(PageBuilder.testable_html(page, false)).to match(/PAGE_CONTENT/)
+        expect(built_content).to match(/^<p>PAGE_CONTENT<\/p>$/)
       end
 
       it "includes the page setup" do
-        expect(PageBuilder.testable_html(page, false)).to match(/!include -setup .PAGE_SETUP/)
+        expect(built_content).to match(/^!include -setup .PAGE_SETUP_PATH$/)
       end
       it "includes the page teardown" do
-        expect(PageBuilder.testable_html(page, false)).to match(/!include -teardown .PAGE_TEARDOWN/)
+        expect(built_content).to match(/^!include -teardown .PAGE_TEARDOWN_PATH$/)
       end
+
+      it "does not include the suite setup" do
+        expect(built_content).to_not match(/^!include -setup .SUITE_SETUP$/)
+      end
+
+      it "does not include the suite teardown" do
+        expect(built_content).to_not match(/^!include -teardown .SUITE_TEARDOWN$/)
+      end
+
     end
 
     describe "with suite setup" do
+      # Example of output from building the psuedo markup:
+      #
+      # !include -setup .SUITE_SETUP_PATH
+      # !include -setup .PAGE_SETUP_PATH
+      # PAGE_CONTENT
+      # !include -teardown .PAGE_TEARDOWN_PATH
+      # !include -teardown .SUITE_TEARDOWN_PATH
+
+      let(:built_content) { PageBuilder.build_pseudo_markup(page, true) }
+
+      it "includes the page content" do
+        expect(built_content).to match(/^<p>PAGE_CONTENT<\/p>$/)
+      end
+
+      it "includes the page setup" do
+        expect(built_content).to match(/^!include -setup .PAGE_SETUP_PATH$/)
+      end
+
+      it "includes the page teardown" do
+        expect(built_content).to match(/^!include -teardown .PAGE_TEARDOWN_PATH$/)
+      end
+
       it "includes the suite setup" do
-        expected_result = "<html>\n!include -setup .SUITE_SETUP\n!include -setup .PAGE_SETUP\nPAGE_CONTENT\n!include -teardown .PAGE_TEARDOWN\n!include -teardown .SUITE_TEARDOWN\n</html>"
-        expect(PageBuilder.testable_html(page, true)).to match(/!include -setup .SUITE_SETUP/)
+        expect(built_content).to match(/^!include -setup .SUITE_SETUP_PATH$/)
       end
 
       it "includes the suite teardown" do
-        expect(PageBuilder.testable_html(page, true)).to match(/!include -teardown .SUITE_TEARDOWN/)
+        expect(built_content).to match(/^!include -teardown .SUITE_TEARDOWN_PATH$/)
       end
     end
   end
