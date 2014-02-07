@@ -1,8 +1,28 @@
 class PageBuilder
 
+  attr_accessor :buffer, :page_data, :include_suite_setup, :wiki_page
+
   def self.build_pseudo_markup (page_data, include_suite_setup)
-    wiki_page = page_data.wiki_page
-    buffer = ""
+    self.new(page_data, include_suite_setup).build_pseudo_markup
+  end
+
+  def initialize (page_data, include_suite_setup)
+    @buffer = ""
+    @page_data = page_data
+    @include_suite_setup = include_suite_setup
+    @wiki_page = page_data.wiki_page
+  end
+
+  def build_pseudo_markup
+    build_setup
+    include_page_content
+    build_teardown
+    return buffer
+  end
+
+  private
+
+  def build_setup
     if page_data.has_attribute('Test')
       if include_suite_setup
         suite_setup = PageCrawlerImpl.inherited_page(SuiteResponder::SUITE_SETUP_NAME, wiki_page)
@@ -19,7 +39,13 @@ class PageBuilder
         buffer.concat('!include -setup .').concat(setup_path_name).concat("\n")
       end
     end
+  end
+
+  def include_page_content
     buffer.concat(page_data.content)
+  end
+
+  def build_teardown
     if page_data.has_attribute('Test')
       teardown = PageCrawlerImpl.inherited_page('TearDown', wiki_page)
       if !teardown.nil?
@@ -36,7 +62,6 @@ class PageBuilder
         end
       end
     end
-    return buffer
   end
 
 end
