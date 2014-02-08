@@ -1,16 +1,34 @@
+require 'string_arg_container'
+require 'integer_arg_container'
+require 'boolean_arg_container'
+
 class ArgParser
   attr_reader :format_string, :args
 
   def initialize (format_string, args)
     @format_string = format_string
     @args = args
-
     @arg_definitions = @format_string.split(/,/)
     @expected_args = @arg_definitions.collect { |arg_def| arg_def[0] }
+    @argument_containers = []
 
+    build_argument_containers
+  end
+
+  def validate
     check_for_invalid_options
-    validate_string_arguments
-    validate_integer_arguments
+    validate_containers
+  end
+
+  def value (arg_flag)
+    container = @argument_containers.find { |container| container.flag == arg_flag }
+    container ? container.value : nil
+  end
+
+  private
+
+  def validate_containers
+    @argument_containers.each(&:validate)
   end
 
   def check_for_invalid_options
@@ -19,60 +37,36 @@ class ArgParser
     end
   end
 
-  def validate_string_arguments
-    @arg_definitions.select { |definition| definition[1] == 's' }.each do |string_arg|
-      arg_flag = string_arg[0]
-      @args.select { |arg| arg[1] == arg_flag }.each do |arg|
-        raise ArgParseError.new("Missing string for -#{arg_flag}") if arg.length < 3
+  def build_argument_containers
+    @arg_definitions.each do |arg_definition|
+      arg_flag = arg_definition[0]
+      value_of_argument = find_value_for_arg_definition(arg_definition)
+      arg_type = arg_definition[1]
+      @argument_containers << case arg_type
+      when nil
+        BooleanArgContainer.new(arg_flag, value_of_argument)
+      when 's'
+        StringArgContainer.new(arg_flag, value_of_argument)
+      when '#'
+        IntegerArgContainer.new(arg_flag, value_of_argument)
+      else
+        raise ArgParseError.new("Invalid argument type")
       end
     end
   end
 
-  def validate_integer_arguments
-    # Check that integer arguments have a value
-    @arg_definitions.select { |definition| definition[1] == '#' }.each do |int_arg|
-      arg_flag = int_arg[0]
-      @args.select { |arg| arg[1] == arg_flag }.each do |arg|
-        raise ArgParseError.new("Missing integer for -#{arg_flag}") if arg.length < 3
-      end
-    end
-
-    # Check that integer arguments are an integer
-    @arg_definitions.select { |definition| definition[1] == '#' }.each do |int_arg|
-      arg_flag = int_arg[0]
-      @args.select { |arg| arg[1] == arg_flag }.each do |arg|
-        int_string = arg[2..-1]
-        raise ArgParseError.new("Integer expected for -#{arg_flag}, but was '#{int_string}'") unless (Integer(int_string) rescue false)
-      end
-    end
-
-  end
-
-  def value (arg)
-    # Fing arg defition, type and raw value for arg
-    arg_definition = @arg_definitions.find { |arg_def| arg_def[0] == arg }
-
-    return nil unless arg_definition
-
-    arg_type = arg_definition[1]
-    raw_arg_value = @args.find { |argument| argument[1] == arg }
-    
-    return nil unless raw_arg_value
-
-    case arg_type
-    when nil # This is a boolean type
-      true
-    when 's'
-      raw_arg_value[2..-1]
-    when '#'
-      Integer(raw_arg_value[2..-1])
+  def find_value_for_arg_definition (arg_definition)
+    arg_flag = arg_definition[0]
+    arg_value = @args.find { |arg| arg[1] == arg_flag }
+    if boolean_definition?(arg_definition)
+      true if arg_value
     else
-      raise "We should never get here"
+      arg_value ? arg_value[2..-1] : nil
     end
   end
 
-  def set? (arg)
-    args.include?("-#{arg}")
+  def boolean_definition? (arg_definition)
+    arg_definition.length == 1
   end
 end
 

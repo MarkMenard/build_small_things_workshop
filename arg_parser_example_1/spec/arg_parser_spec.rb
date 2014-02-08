@@ -4,19 +4,23 @@ describe ArgParser do
 
   describe "parsing errors" do
     it "raises an error when an invalid flag is present" do
-      expect { ArgParser.new("c", [ "-v" ])}.to raise_error ArgParseError, "Unexpected option -v"
+      expect { ArgParser.new("c", [ "-v" ]).validate}.to raise_error ArgParseError, "Unexpected option -v"
     end
 
     it "raises a parse error when a string argument is missing a value" do
-      expect { ArgParser.new("es", [ "-e" ])}.to raise_error ArgParseError, "Missing string for -e"
+      expect { ArgParser.new("es", [ "-e" ]).validate}.to raise_error ArgParseError, "Missing string for -e"
     end
 
     it "raises a parse error when an integer argument is missing a value" do
-      expect { ArgParser.new("e#", [ "-e" ])}.to raise_error ArgParseError, "Missing integer for -e"
+      expect { ArgParser.new("e#", [ "-e" ]).validate}.to raise_error ArgParseError, "Missing integer for -e"
     end
 
     it "raises a parse error when an integer argument is not an integer" do
-      expect { ArgParser.new("e#", [ "-efoo" ])}.to raise_error ArgParseError, "Integer expected for -e, but was 'foo'"
+      expect { ArgParser.new("e#", [ "-efoo" ]).validate}.to raise_error ArgParseError, "Integer expected for -e, but was 'foo'"
+    end
+
+    it "raises an error for an argument type we don't support" do
+      expect { ArgParser.new("eF", [ "-efoo" ]).validate}.to raise_error ArgParseError, "Invalid argument type"
     end
   end
 
