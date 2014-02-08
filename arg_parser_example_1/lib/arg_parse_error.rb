@@ -1,0 +1,2 @@
+class ArgParseError < StandardError
+end

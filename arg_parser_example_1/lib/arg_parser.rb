@@ -1,6 +1,8 @@
 require 'string_arg_container'
 require 'integer_arg_container'
 require 'boolean_arg_container'
+require 'string_array_arg_container'
+require 'arg_parse_error'
 
 class ArgParser
   attr_reader :format_string, :args
@@ -49,6 +51,8 @@ class ArgParser
         StringArgContainer.new(arg_flag, value_of_argument)
       when '#'
         IntegerArgContainer.new(arg_flag, value_of_argument)
+      when 'S'
+        StringArrayArgContainer.new(arg_flag, value_of_argument)
       else
         raise ArgParseError.new("Invalid argument type")
       end
@@ -68,7 +72,4 @@ class ArgParser
   def boolean_definition? (arg_definition)
     arg_definition.length == 1
   end
-end
-
-class ArgParseError < StandardError
 end

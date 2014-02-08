@@ -11,6 +11,10 @@ describe ArgParser do
       expect { ArgParser.new("es", [ "-e" ]).validate}.to raise_error ArgParseError, "Missing string for -e"
     end
 
+    it "raises a parse error when a string array argument is missing a value" do
+      expect { ArgParser.new("eS", [ "-e" ]).validate}.to raise_error ArgParseError, "Missing string array for -e"
+    end
+
     it "raises a parse error when an integer argument is missing a value" do
       expect { ArgParser.new("e#", [ "-e" ]).validate}.to raise_error ArgParseError, "Missing integer for -e"
     end
@@ -67,7 +71,10 @@ describe ArgParser do
   describe "float options"
 
   describe "string array options" do
-    it "can parse string array options"
+    it "can parse string array options" do
+      parser = ArgParser.new("aS", [ "-afoo,bar,baz"])
+      expect(parser.value("a")).to eq([ "foo", "bar", "baz" ])
+    end
   end
 
   describe "definition options" do
